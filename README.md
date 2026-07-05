@@ -2,7 +2,17 @@
 
 This is from the C API examples provided with the Playdate SDK, with the addition of mruby.
 
+## Overview
 
+Parts of the app:
+
+1. src/main.c - the Playdate C SDK entrypoint, this file is responsible for initializing the mruby virtual machine and configuring the C<->Ruby bridge
+2. vendor/mruby/mruby.c - the mruby virtual machine, compiled amalgam from the mruby project with alloc_func definitions commented out
+3. src/game.rb - Ruby source
+
+## Prerequisites
+
+mruby binaries must be installed and available on your path - mrbc specifically is used to compile existing .rb files to .c files to be included as bytecode into the build
 
 ## Windows build
 

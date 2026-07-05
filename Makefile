@@ -18,22 +18,26 @@ endif
 # ex: VPATH += src1:src2
 ######
 
-VPATH += src
+VPATH += src:vendor/mruby
 
 # List C source files here
-SRC = src/main.c
+SRC = vendor/mruby/mruby.c src/main.c src/ruby_source.c
+
+src/ruby_source.c: src/game.rb
+	mrbc -g -B ruby_source -o $@ $^
+
 
 # List all user directories here
-UINCDIR = 
+UINCDIR = vendor/mruby/
 
 # List user asm files
-UASRC = 
+UASRC =
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = 
+UDEFS = -DMRB_NO_STDIO
 
 # Define ASM defines here
-UADEFS = 
+UADEFS =
 
 # List the user directory to look for the libraries here
 ULIBDIR =
@@ -41,5 +45,7 @@ ULIBDIR =
 # List all user libraries here
 ULIBS =
 
-include $(SDK)/C_API/buildsupport/common.mk
+# Ensure Mruby links correctly
+LDFLAGS += --specs=nano.specs --specs=nosys.specs
 
+include $(SDK)/C_API/buildsupport/common.mk
