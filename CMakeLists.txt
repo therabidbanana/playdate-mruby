@@ -61,7 +61,7 @@ set(RUBY_BINDINGS
 # )
 
 # Ruby binary files - set up to be part of the pdx and loaded dynamic on game init
-file(GLOB CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartidge/*.rb)
+file(GLOB CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartridge/*.rb)
 set(CARTRIDGE_MRB "")
 foreach(rb ${CARTRIDGE_RB})
   get_filename_component(name ${rb} NAME_WE)
@@ -77,6 +77,12 @@ foreach(rb ${CARTRIDGE_RB})
   list(APPEND CARTRIDGE_MRB ${out})
 endforeach()
 message(STATUS "cartridge rb: ${CARTRIDGE_RB}")
+message(STATUS "cartridge mrb: ${CARTRIDGE_MRB}")
+
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+  PROPERTIES OBJECT_DEPENDS "${CARTRIDGE_MRB}"
+)
 
 project(${PLAYDATE_GAME_NAME} C ASM)
 
