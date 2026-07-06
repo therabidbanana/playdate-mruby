@@ -7,11 +7,14 @@ $x = (400 - $TEXT_WIDTH) / 2
 $y = (240 - $TEXT_HEIGHT) / 2
 $dx = 1
 $dy = 2
-Playdate::System.logToConsole('Foobar')
+$name = "there"
+
+# Verifying load process works
+Playdate.load("cartridge/other.mrb")
 
 def game_update()
   Playdate::Graphics.clear()
-  msg = "Hello Ruby"
+  msg = "Hello #{$name}"
   Playdate::Graphics.drawText(msg, msg.length, $x, $y)
   $x += $dx;
   $y += $dy;

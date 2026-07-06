@@ -4,3 +4,4 @@ build-device/
 .nova/
 .sentry-native/
 __cmake_systeminformation/
+Source/**/*.mrb

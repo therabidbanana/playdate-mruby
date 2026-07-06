@@ -37,20 +37,46 @@ set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 set(PLAYDATE_GAME_NAME hello_world)
 set(PLAYDATE_GAME_DEVICE hello_world_DEVICE)
 
+# Ruby Binding Files
+set(RUBY_BINDINGS
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings/rubybind_base.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings/system.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings/graphics.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings/sprite.c
+)
+
 # Ruby Sources - must be set up in proper load order
-set(RUBY_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/game.rb
-)
+# This compiles into a shared ruby_source.c file
+# set(RUBY_SOURCES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/src/cartidge/game.rb
+# )
 
-set(RUBY_BYTECODE_C ${CMAKE_CURRENT_BINARY_DIR}/ruby_source.c)
-add_custom_command(
-  OUTPUT ${RUBY_BYTECODE_C}
-  COMMAND ${MRBC} -g -B ruby_source -o ${RUBY_BYTECODE_C} ${RUBY_SOURCES}
-  DEPENDS ${RUBY_SOURCES} ${MRBC}
-  COMMENT "Compiling ruby to ruby_source.c"
-  VERBATIM
-)
+# set(RUBY_BYTECODE_C ${CMAKE_CURRENT_BINARY_DIR}/ruby_source.c)
+# add_custom_command(
+#   OUTPUT ${RUBY_BYTECODE_C}
+#   COMMAND ${MRBC} -g -B ruby_source -o ${RUBY_BYTECODE_C} ${RUBY_SOURCES}
+#   DEPENDS ${RUBY_SOURCES} ${MRBC}
+#   COMMENT "Compiling ruby to ruby_source.c"
+#   VERBATIM
+# )
 
+# Ruby binary files - set up to be part of the pdx and loaded dynamic on game init
+file(GLOB CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartidge/*.rb)
+set(CARTRIDGE_MRB "")
+foreach(rb ${CARTRIDGE_RB})
+  get_filename_component(name ${rb} NAME_WE)
+  set(out ${CMAKE_CURRENT_SOURCE_DIR}/Source/cartridge/${name}.mrb)
+  add_custom_command(
+    OUTPUT  ${out}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/Source/cartridge
+    COMMAND ${MRBC} -g -o ${out} ${rb}
+    DEPENDS ${rb} ${MRBC}
+    COMMENT "mrbc ${name}.rb -> Source/cartridge/${name}.mrb"
+    VERBATIM
+  )
+  list(APPEND CARTRIDGE_MRB ${out})
+endforeach()
+message(STATUS "cartridge rb: ${CARTRIDGE_RB}")
 
 project(${PLAYDATE_GAME_NAME} C ASM)
 
@@ -69,7 +95,6 @@ if (TOOLCHAIN STREQUAL "armgcc")
     -fno-asynchronous-unwind-tables
   )
   add_compile_definitions(__FPU_USED=1)
-
 endif()
 add_compile_definitions(
   MRB_NO_STDIO
@@ -80,20 +105,24 @@ target_compile_definitions(mruby PRIVATE
 )
 target_include_directories(mruby PUBLIC ${CMAKE_SOURCE_DIR}/vendor/mruby)
 
+add_custom_target(cartridge ALL DEPENDS ${CARTRIDGE_MRB})
+
 if (TOOLCHAIN STREQUAL "armgcc")
-  add_executable(${PLAYDATE_GAME_DEVICE} src/main.c)
+  add_executable(${PLAYDATE_GAME_DEVICE} src/main.c ${RUBY_BINDINGS})
   target_link_libraries(${PLAYDATE_GAME_DEVICE} mruby)
   target_link_options(${PLAYDATE_GAME_DEVICE} PRIVATE --specs=nano.specs --specs=nosys.specs)
 else()
-  add_library(${PLAYDATE_GAME_NAME} SHARED src/main.c)
+  add_library(${PLAYDATE_GAME_NAME} SHARED src/main.c ${RUBY_BINDINGS})
   target_link_libraries(${PLAYDATE_GAME_NAME} mruby)
 endif()
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)
 
 if (TARGET ${PLAYDATE_GAME_DEVICE})
-  target_sources(${PLAYDATE_GAME_DEVICE} PRIVATE ${RUBY_BYTECODE_C})
+  add_dependencies(${PLAYDATE_GAME_DEVICE} cartridge)
+  # target_sources(${PLAYDATE_GAME_DEVICE} PRIVATE ${RUBY_BYTECODE_C})
 endif()
 if (TARGET ${PLAYDATE_GAME_NAME})
-  target_sources(${PLAYDATE_GAME_NAME} PRIVATE ${RUBY_BYTECODE_C})
+  add_dependencies(${PLAYDATE_GAME_NAME} cartridge)
+  # target_sources(${PLAYDATE_GAME_NAME} PRIVATE ${RUBY_BYTECODE_C})
 endif()
