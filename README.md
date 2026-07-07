@@ -7,8 +7,13 @@ This is from the C API examples provided with the Playdate SDK, with the additio
 Parts of the app:
 
 1. src/main.c - the Playdate C SDK entrypoint, this file is responsible for initializing the mruby virtual machine and configuring the C<->Ruby bridge
-2. vendor/mruby/mruby.c - the mruby virtual machine, compiled amalgam from the mruby project with alloc_func definitions commented out
-3. src/game.rb - Ruby source
+2. vendor/mruby/mruby.c - the mruby virtual machine, compiled amalgam from the mruby project with alloc_func definitions commented out (still not clear why this is necessary in addition to override - only seems to matter for ARM gcc)
+4. src/bindings/rubybind_base.c - entry point for main.c to set up the Ruby virtual machine bindings
+5. src/bindings/*.c - Ruby bindings for various Playdate C API modules
+6. lib/*.rb - Ruby files that will be compiled into the core binary, loaded after bindings
+7. cartridge/game.rb - Core game file, loaded after everything else, hooked into Playdate's C update loop
+
+Note that cartridge is compiled as mrb files and included in the final pdx build for dynamic loading. Theoretically this means games can be recompiled with just an MRBC command, but to get there a lot more bindings / setup to the standard library need done.
 
 ## Prerequisites
 
@@ -45,3 +50,17 @@ cd build
 cmake .. -G "NMake Makefiles" --toolchain=~\Documents\PlaydateSDK\C_API\buildsupport\arm.cmake
 nmake
 ```
+
+## API Coverage
+
+* Sprites 
+  - creating and move to()
+  - setting image
+  - drawing all sprites
+* Bitmap
+  - Loading a bitmap
+* Graphics
+  - drawText
+  - clear (no color yet)
+* System
+  - logToConsole, FPS

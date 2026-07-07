@@ -48,9 +48,8 @@ static mrb_value pd_sprite_setImage(mrb_state *mrb, mrb_value self){
 }
 
 static mrb_value pd_sprite_getImage(mrb_state *mrb, mrb_value self){
-    LCDSprite* s = pd_sprite_get(mrb, self);
-    LCDBitmap* b = g_pd->sprite->getImage(s);
-    return mrb_obj_value(b);
+    // Use boxed pointer instead
+    return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@image"));
 }
 
 static mrb_value pd_sprite_drawSprites(mrb_state *mrb, mrb_value self){

@@ -10,8 +10,7 @@ $dy = 2
 $name = "there"
 
 $sprite = Playdate::Sprite.new
-$image = Playdate::Graphics.loadBitmap('images/player')
-$sprite.set_image($image)
+$sprite.set_image(Playdate::Graphics.loadBitmap('images/player'))
 $sprite.move_to($x, $y)
 
 # Verifying load process works
@@ -23,18 +22,7 @@ def game_update()
   Playdate::Graphics.clear()
   Playdate::Sprite.drawSprites()
   msg = "Hello #{$name}"
-  # other_image = $sprite.get_image
-  begin
-    Playdate::System.logToConsole("image = #{$image.inspect}")
-  rescue => e
-    Playdate::System.logToConsole("raised #{e.inspect}")
-  end
 
-
-  # if other_image == image
-  # else
-  #   Playdate::System.logToConsole("image != other_image")
-  # end
   Playdate::Graphics.drawText(msg, msg.length, $x, $y)
   $x += $dx
   $y += $dy
