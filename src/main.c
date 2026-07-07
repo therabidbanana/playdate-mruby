@@ -14,7 +14,7 @@
 #include "bindings/rubybind_base.h"
 
 // ARM compiling MRuby for device needs the following stubs for exception handlers
-#if defined(___GNUC__) && !defined(_WIN32)
+#if defined(__thumb__)
 __attribute__((used)) void *__exidx_start[0] = {};
 __attribute__((used)) void *__exidx_end[0] = {};
 #endif
@@ -37,15 +37,13 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 	{
     	pd->system->logToConsole("Loaded up.");
 	    ruby = initRuby(pd);
-		load_mrb_file(ruby, "cartridge/game.mrb");
 
-		// mrb_load_irep(ruby, ruby_source);
-        // if(ruby->exc){
-        //     mrb_value m = mrb_funcall(ruby, mrb_obj_value(ruby->exc), "inspect", 0);
-        //     pd->system->logToConsole("MRB Error: %s", mrb_str_to_cstr(ruby, m));
-        //     ruby->exc = NULL;
-        // }
-        pd->system->logToConsole("Ruby source loaded.");
+		mrb_load_irep(ruby, ruby_source);
+		ruby_report_any_exception(ruby);
+		pd->system->logToConsole("Ruby libraries loaded.");
+
+		load_mrb_file(ruby, "cartridge/game.mrb");
+		pd->system->logToConsole("Ruby cartridge loaded.");
 
 		const char* err;
 		font = pd->graphics->loadFont(fontpath, &err);

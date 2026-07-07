@@ -9,16 +9,36 @@ $dx = 1
 $dy = 2
 $name = "there"
 
+$sprite = Playdate::Sprite.new
+$image = Playdate::Graphics.loadBitmap('images/player')
+$sprite.set_image($image)
+$sprite.move_to($x, $y)
+
 # Verifying load process works
-Playdate.load("cartridge/other.mrb")
+# Playdate.load("cartridge/other.mrb")
+require 'other'
+require './other'
 
 def game_update()
   Playdate::Graphics.clear()
+  Playdate::Sprite.drawSprites()
   msg = "Hello #{$name}"
-  Playdate::Graphics.drawText(msg, msg.length, $x, $y)
-  $x += $dx;
-  $y += $dy;
+  # other_image = $sprite.get_image
+  begin
+    Playdate::System.logToConsole("image = #{$image.inspect}")
+  rescue => e
+    Playdate::System.logToConsole("raised #{e.inspect}")
+  end
 
+
+  # if other_image == image
+  # else
+  #   Playdate::System.logToConsole("image != other_image")
+  # end
+  Playdate::Graphics.drawText(msg, msg.length, $x, $y)
+  $x += $dx
+  $y += $dy
+  $sprite.move_to($x, $y)
 
   $dx = -$dx unless $x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
   $dy = -$dy unless $y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)

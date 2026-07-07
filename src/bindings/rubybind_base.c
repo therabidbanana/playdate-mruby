@@ -26,11 +26,14 @@ mrb_value load_mrb_file(mrb_state* mrb, const char* path){
         return mrb_nil_value();
     }
 
+    mrb_value prev_value = mrb_gv_get(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"));
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"), mrb_str_new_cstr(mrb, path));
     int ai = mrb_gc_arena_save(mrb);
     mrb_value r = mrb_load_irep_buf(mrb, buf, st.size);
     g_pd->system->realloc(buf, 0);
-    pd_report_any_exception(mrb);
+    ruby_report_any_exception(mrb);
     mrb_gc_arena_restore(mrb, ai);
+    mrb_gv_set(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"), prev_value);
     return r;
 }
 
@@ -62,6 +65,7 @@ mrb_state* initRuby(PlaydateAPI* pd)
 
     rubybind_pd_system(ruby);
     rubybind_pd_graphics(ruby);
+    rubybind_pd_sprite(ruby);
 
     mrb_define_module_function(ruby, playdate, "load", pd_load, MRB_ARGS_REQ(1));
 

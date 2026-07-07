@@ -45,22 +45,21 @@ set(RUBY_BINDINGS
   ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings/sprite.c
 )
 
-# Ruby Sources - must be set up in proper load order
-# This compiles into a shared ruby_source.c file
-# set(RUBY_SOURCES
-#   ${CMAKE_CURRENT_SOURCE_DIR}/src/cartidge/game.rb
-# )
+# Ruby Library - compiled in
+set(RUBY_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/core.rb
+)
 
-# set(RUBY_BYTECODE_C ${CMAKE_CURRENT_BINARY_DIR}/ruby_source.c)
-# add_custom_command(
-#   OUTPUT ${RUBY_BYTECODE_C}
-#   COMMAND ${MRBC} -g -B ruby_source -o ${RUBY_BYTECODE_C} ${RUBY_SOURCES}
-#   DEPENDS ${RUBY_SOURCES} ${MRBC}
-#   COMMENT "Compiling ruby to ruby_source.c"
-#   VERBATIM
-# )
+set(RUBY_BYTECODE_C ${CMAKE_CURRENT_BINARY_DIR}/ruby_source.c)
+add_custom_command(
+  OUTPUT ${RUBY_BYTECODE_C}
+  COMMAND ${MRBC} -g -B ruby_source -o ${RUBY_BYTECODE_C} ${RUBY_SOURCES}
+  DEPENDS ${RUBY_SOURCES} ${MRBC}
+  COMMENT "Compiling ruby to ruby_source.c"
+  VERBATIM
+)
 
-# Ruby binary files - set up to be part of the pdx and loaded dynamic on game init
+# Ruby cartridge files - set up to be part of the pdx and loaded dynamic on game init
 file(GLOB CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartridge/*.rb)
 set(CARTRIDGE_MRB "")
 foreach(rb ${CARTRIDGE_RB})
@@ -69,7 +68,8 @@ foreach(rb ${CARTRIDGE_RB})
   add_custom_command(
     OUTPUT  ${out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/Source/cartridge
-    COMMAND ${MRBC} -g -o ${out} ${rb}
+    COMMAND ${MRBC} -g -o ${out} cartridge/${name}.rb
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     DEPENDS ${rb} ${MRBC}
     COMMENT "mrbc ${name}.rb -> Source/cartridge/${name}.mrb"
     VERBATIM
@@ -77,7 +77,6 @@ foreach(rb ${CARTRIDGE_RB})
   list(APPEND CARTRIDGE_MRB ${out})
 endforeach()
 message(STATUS "cartridge rb: ${CARTRIDGE_RB}")
-message(STATUS "cartridge mrb: ${CARTRIDGE_MRB}")
 
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
@@ -126,9 +125,9 @@ include(${SDK}/C_API/buildsupport/playdate_game.cmake)
 
 if (TARGET ${PLAYDATE_GAME_DEVICE})
   add_dependencies(${PLAYDATE_GAME_DEVICE} cartridge)
-  # target_sources(${PLAYDATE_GAME_DEVICE} PRIVATE ${RUBY_BYTECODE_C})
+  target_sources(${PLAYDATE_GAME_DEVICE} PRIVATE ${RUBY_BYTECODE_C})
 endif()
 if (TARGET ${PLAYDATE_GAME_NAME})
   add_dependencies(${PLAYDATE_GAME_NAME} cartridge)
-  # target_sources(${PLAYDATE_GAME_NAME} PRIVATE ${RUBY_BYTECODE_C})
+  target_sources(${PLAYDATE_GAME_NAME} PRIVATE ${RUBY_BYTECODE_C})
 endif()
