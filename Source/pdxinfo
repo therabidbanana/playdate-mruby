@@ -1,5 +1,5 @@
-name=Hello World C
-author=Dave Hayden
+name=Hello MRuby+C
+author=David Haslem
 description=A small demo of the C API
-bundleID=com.panic.hellocapi
+bundleID=com.davidhaslem.hellomruby
 imagePath=

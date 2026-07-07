@@ -1,7 +1,7 @@
 BSD Zero Clause License
 =======================
 
-Copyright (C) Panic Inc. help@play.date
+Copyright (C) David Haslem
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted.
