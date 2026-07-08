@@ -1,4 +1,6 @@
 Figure out constants (colors)
+  - Simple colors are int constants
+  - TODO - patterns (pointers to a pattern)
 
 Build cleaner debug helpers
 

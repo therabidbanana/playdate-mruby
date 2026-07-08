@@ -38,7 +38,6 @@ class HelloMruby < Pyrite::Cartridge
   end
 
   def draw
-    Playdate::Graphics.clear()
     Playdate::Sprite.drawSprites()
     msg = "Hello #{$name}"
     Playdate::Graphics.drawText(msg, msg.length, @x, @y)

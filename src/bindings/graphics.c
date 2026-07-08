@@ -13,8 +13,10 @@ pd_graphics_drawText(mrb_state *mrb, mrb_value self)
 static mrb_value
 pd_graphics_clear(mrb_state *mrb, mrb_value self)
 {
-    // TODO: Allow color
-    g_pd->graphics->clear(kColorWhite);
+    mrb_int enum_color = kColorWhite;
+    mrb_get_args(mrb, "|i", &enum_color);
+
+    g_pd->graphics->clear((LCDColor) enum_color);
     return mrb_nil_value();
 }
 
@@ -51,7 +53,12 @@ void rubybind_pd_graphics(mrb_state *mrb) {
 
     mrb_define_module_function(mrb, graphics, "drawText", pd_graphics_drawText, MRB_ARGS_REQ(4));
     mrb_define_module_function(mrb, graphics, "loadBitmap", pd_graphics_loadBitmap, MRB_ARGS_REQ(1));
-    mrb_define_module_function(mrb, graphics, "clear", pd_graphics_clear, MRB_ARGS_NONE());
+    mrb_define_module_function(mrb, graphics, "clear", pd_graphics_clear, MRB_ARGS_OPT(1));
+
+    mrb_define_const(mrb, graphics, "BLACK", mrb_fixnum_value(kColorBlack));
+    mrb_define_const(mrb, graphics, "WHITE", mrb_fixnum_value(kColorWhite));
+    mrb_define_const(mrb, graphics, "CLEAR", mrb_fixnum_value(kColorClear));
+    mrb_define_const(mrb, graphics, "XOR", mrb_fixnum_value(kColorXOR));
 
     g_pd->system->logToConsole("Playdate->Graphics SDK functions prepared");
 }
