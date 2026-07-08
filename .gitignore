@@ -5,3 +5,5 @@ build-device/
 .sentry-native/
 __cmake_systeminformation/
 Source/**/*.mrb
+Source/pdex.dll
+Source/pdex.elf

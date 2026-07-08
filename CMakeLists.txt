@@ -48,6 +48,9 @@ set(RUBY_BINDINGS
 # Ruby Library - compiled in
 set(RUBY_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/core.rb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/core.rb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/logger.rb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/cartridge.rb
 )
 
 set(RUBY_BYTECODE_C ${CMAKE_CURRENT_BINARY_DIR}/ruby_source.c)

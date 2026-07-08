@@ -2,11 +2,6 @@
 
 static void sprite_free(mrb_state *mrb, void *p){
     if (p) {
-        LCDBitmap* b = g_pd->sprite->getImage((LCDSprite*)p);
-        // TODO - figure out collection
-        if (b) g_pd->graphics->freeBitmap((LCDBitmap*)p);
-        // mrb_value bitmap = mrb_obj_value(b);
-        // mrb_gc_unregister(mrb, bitmap);
         g_pd->sprite->freeSprite((LCDSprite*)p);
     };
 }

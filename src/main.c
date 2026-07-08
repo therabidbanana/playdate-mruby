@@ -25,6 +25,7 @@ static int update(void* userdata);
 const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
 LCDFont* font = NULL;
 mrb_state* ruby;
+struct RClass* pyrite;
 
 #ifdef _WINDLL
 __declspec(dllexport)
@@ -39,10 +40,11 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 	    ruby = initRuby(pd);
 
 		mrb_load_irep(ruby, ruby_source);
+    	pyrite = mrb_module_get(ruby, "Pyrite");
 		ruby_report_any_exception(ruby);
-		pd->system->logToConsole("Ruby libraries loaded.");
+		pd->system->logToConsole("Pyrite libraries loaded.");
 
-		load_mrb_file(ruby, "cartridge/game.mrb");
+		load_mrb_file(ruby, "cartridge/main.mrb");
 		pd->system->logToConsole("Ruby cartridge loaded.");
 
 		const char* err;
@@ -65,10 +67,12 @@ static int update(void* userdata)
     PlaydateAPI* pd = userdata;
     /* Call with symbol (faster, no string lookup) */
     int snapshot = mrb_gc_arena_save(ruby);
-    mrb_funcall_id(ruby, mrb_top_self(ruby), mrb_intern_lit(ruby, "game_update"), 0);
+
+    // TODO: let this control with return value
+    mrb_funcall_id(ruby, mrb_obj_value(pyrite), mrb_intern_lit(ruby, "game_update"), 0);
     if(ruby->exc){
         mrb_value m = mrb_funcall(ruby, mrb_obj_value(ruby->exc), "inspect", 0);
-        // pd->system->logToConsole("MRB Error: %s", mrb_str_to_cstr(ruby, m));
+        pd->system->logToConsole("Cartridge Error: %s", mrb_str_to_cstr(ruby, m));
         ruby->exc = NULL;
     }
     // mrb_value val = mrb_load_string(ruby, "game_update()");
