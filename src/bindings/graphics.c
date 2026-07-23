@@ -42,18 +42,65 @@ pd_graphics_loadBitmap(mrb_state *mrb, mrb_value self)
 	return mrb_obj_value(d);
 }
 
+/* -------------------------------------------------
+ *
+ *  Image Table Support
+ *
+ * -------------------------------------------------
+ */
+
+static void bitmap_table_free(mrb_state *mrb, void *p){
+    g_pd->graphics->freeBitmapTable((LCDBitmapTable*)p);
+}
+
+// Boxed value for Playdate SDK LCDBitmapTable
+const mrb_data_type pd_bitmap_table_type = { "Playdate::BitmapTable", bitmap_table_free };
+struct RClass* bitmap_table;
+
+static mrb_value
+pd_graphics_loadBitmapTable(mrb_state *mrb, mrb_value self)
+{
+    const char *outErr = NULL;
+    const char* path;
+    mrb_get_args(mrb, "z", &path);
+	LCDBitmapTable *img = g_pd->graphics->loadBitmapTable(path, &outErr);
+	struct RData *d = mrb_data_object_alloc(mrb, bitmap_table, img, &pd_bitmap_table_type);
+
+	if ( outErr != NULL ) {
+		g_pd->system->logToConsole("Error loading image at path '%s': %s", path, outErr);
+	}
+	return mrb_obj_value(d);
+}
+
+static mrb_value pd_graphics_getTableBitmap(mrb_state *mrb, mrb_value self){
+    mrb_int table_index;
+    mrb_get_args(mrb, "i", &table_index);
+    // Use helper to unbox BitmapTable in ruby to LCDBitmapTable pointer in C
+    LCDBitmapTable* bt = pd_bitmap_table_get(mrb, self);
+
+    LCDBitmap* b = g_pd->graphics->getTableBitmap(bt, (int)table_index);
+	struct RData *d = mrb_data_object_alloc(mrb, bitmap, b, &pd_bitmap_type);
+
+    return mrb_obj_value(d);
+}
+
 void rubybind_pd_graphics(mrb_state *mrb) {
     g_pd->system->logToConsole("Preparing Playdate->Graphics SDK functions...");
 
     struct RClass *pd = mrb_module_get(mrb, "Playdate");
     struct RClass *graphics = mrb_define_module_under(mrb, pd, "Graphics");
     bitmap = mrb_define_class_under(mrb, pd, "Bitmap", mrb->object_class);
+    bitmap_table = mrb_define_class_under(mrb, pd, "BitmapTable", mrb->object_class);
     // mrb defined way to hint this class is C backed
     MRB_SET_INSTANCE_TT(bitmap, MRB_TT_DATA);
+    MRB_SET_INSTANCE_TT(bitmap_table, MRB_TT_DATA);
 
     mrb_define_module_function(mrb, graphics, "drawText", pd_graphics_drawText, MRB_ARGS_REQ(4));
     mrb_define_module_function(mrb, graphics, "loadBitmap", pd_graphics_loadBitmap, MRB_ARGS_REQ(1));
     mrb_define_module_function(mrb, graphics, "clear", pd_graphics_clear, MRB_ARGS_OPT(1));
+
+    mrb_define_module_function(mrb, graphics, "loadBitmapTable", pd_graphics_loadBitmapTable, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, bitmap_table, "get_bitmap", pd_graphics_getTableBitmap, MRB_ARGS_REQ(1));
 
     mrb_define_const(mrb, graphics, "BLACK", mrb_fixnum_value(kColorBlack));
     mrb_define_const(mrb, graphics, "WHITE", mrb_fixnum_value(kColorWhite));

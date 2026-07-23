@@ -4,6 +4,7 @@
 extern PlaydateAPI *g_pd;
 extern const mrb_data_type pd_sprite_type;
 extern const mrb_data_type pd_bitmap_type;
+extern const mrb_data_type pd_bitmap_table_type;
 // Convert mrb wrapper to Playdate Sprite
 static inline LCDSprite* pd_sprite_get(mrb_state *mrb, mrb_value v){
     return (LCDSprite*)mrb_data_get_ptr(mrb, v, &pd_sprite_type);
@@ -12,6 +13,11 @@ static inline LCDSprite* pd_sprite_get(mrb_state *mrb, mrb_value v){
 static inline LCDBitmap* pd_bitmap_get(mrb_state *mrb, mrb_value v){
     return (LCDBitmap*)mrb_data_get_ptr(mrb, v, &pd_bitmap_type);
 }
+// Convert mrb wrapper to Playdate BitmapTable
+static inline LCDBitmapTable* pd_bitmap_table_get(mrb_state *mrb, mrb_value v){
+    return (LCDBitmapTable*)mrb_data_get_ptr(mrb, v, &pd_bitmap_table_type);
+}
+
 
 static inline void ruby_report_any_exception(mrb_state *ruby){
     if(ruby->exc){

@@ -32,7 +32,7 @@ static mrb_value pd_sprite_setImage(mrb_state *mrb, mrb_value self){
     mrb_get_args(mrb, "o", &bitmap);
     // Use helper to unbox Sprite in ruby to LCDSprite pointer in C
     LCDSprite* s = pd_sprite_get(mrb, self);
-    // Save pointer to bitmap on the sprite boxed object
+    // Save pointer to bitmap on the sprite boxed object to avoid collection
     mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@image"), bitmap);
 
     LCDBitmap* b = pd_bitmap_get(mrb, bitmap);

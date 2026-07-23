@@ -9,5 +9,10 @@ module Pyrite
 
     def update
     end
+
+    def memory_slots
+      objects = ObjectSpace.count_objects
+      "Slots: #{objects[:FREE]} free / #{objects[:TOTAL]}"
+    end
   end
 end

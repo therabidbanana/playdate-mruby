@@ -75,8 +75,9 @@ static int update(void* userdata)
         pd->system->logToConsole("Cartridge Error: %s", mrb_str_to_cstr(ruby, m));
         ruby->exc = NULL;
     }
-    // mrb_value val = mrb_load_string(ruby, "game_update()");
+    //
     mrb_gc_arena_restore(ruby, snapshot);
-    // Should redraw?
+    //
+    // Should redraw? - drive from return of game_update?
     return 1;
 }

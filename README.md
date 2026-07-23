@@ -15,6 +15,11 @@ Parts of the app:
 
 Note that cartridge is compiled as mrb files and included in the final pdx build for dynamic loading. Theoretically this means games can be recompiled with just an MRBC command, but to get there a lot more bindings / setup to the standard library need done.
 
+### Resources
+
+https://github.com/mruby/mruby/blob/master/doc/guides/capi.md
+https://sdk.play.date/3.0.6/Inside%20Playdate%20with%20C.html
+
 ## Prerequisites
 
 mruby binaries must be installed and available on your path - mrbc specifically is used to compile existing .rb files to .c files to be included as bytecode into the build
@@ -50,17 +55,3 @@ cd build
 cmake .. -G "NMake Makefiles" --toolchain=~\Documents\PlaydateSDK\C_API\buildsupport\arm.cmake
 nmake
 ```
-
-## API Coverage
-
-* Sprites 
-  - creating and move to()
-  - setting image
-  - drawing all sprites
-* Bitmap
-  - Loading a bitmap
-* Graphics
-  - drawText
-  - clear (no color yet)
-* System
-  - logToConsole, FPS

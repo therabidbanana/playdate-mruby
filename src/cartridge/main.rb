@@ -15,6 +15,7 @@ class HelloMruby < Pyrite::Cartridge
   def initialize
     @x = (400 - $TEXT_WIDTH) / 2
     @y = (240 - $TEXT_HEIGHT) / 2
+    @dt = 0
     @dx = 1
     @dy = 2
     @player = boot_player
@@ -22,8 +23,10 @@ class HelloMruby < Pyrite::Cartridge
   end
 
   def boot_player
+    image_table = Playdate::Graphics.loadBitmapTable('images/pineapple-walk')
+    @bitmap = image_table.get_bitmap(1)
     Playdate::Sprite.new.tap do |sprite|
-      sprite.set_image(Playdate::Graphics.loadBitmap('images/player'))
+      sprite.set_image(@bitmap)
       sprite.move_to(@x, @y)
     end
   end
@@ -31,7 +34,10 @@ class HelloMruby < Pyrite::Cartridge
   def update
     @x += @dx
     @y += @dy
+    @dt += 1
     @player.move_to(@x, @y)
+    @player.set_image(@bitmap)
+    logger.info(memory_slots) if (@dt % 30).zero?
 
     @dx = -@dx unless @x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
     @dy = -@dy unless @y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)
@@ -41,6 +47,7 @@ class HelloMruby < Pyrite::Cartridge
     Playdate::Sprite.drawSprites()
     msg = "Hello #{$name}"
     Playdate::Graphics.drawText(msg, msg.length, @x, @y)
+    Playdate::Graphics.drawText(memory_slots, memory_slots.length, 0, 10)
     Playdate::System.drawFPS(0,0)
   end
 end
