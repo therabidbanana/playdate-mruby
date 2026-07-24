@@ -22,6 +22,14 @@ pd_system_drawFPS(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+// static mrb_value
+// pd_system_getCurrentTimeMilliseconds(mrb_state *mrb, mrb_value self)
+// {
+//     unsigned int val = g_pd->system->getCurrentTimeMilliseconds();
+
+//     return mrb_fixnum_value((mrb_int) val);
+// }
+
 void rubybind_pd_system(mrb_state *mrb) {
     g_pd->system->logToConsole("Preparing Playdate->System SDK functions...");
 

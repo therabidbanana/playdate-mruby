@@ -65,11 +65,13 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 static int update(void* userdata)
 {
     PlaydateAPI* pd = userdata;
+    float dt = pd->system->getElapsedTime();
+
     /* Call with symbol (faster, no string lookup) */
     int snapshot = mrb_gc_arena_save(ruby);
 
     // TODO: let this control with return value
-    mrb_funcall_id(ruby, mrb_obj_value(pyrite), mrb_intern_lit(ruby, "game_update"), 0);
+    mrb_funcall_id(ruby, mrb_obj_value(pyrite), mrb_intern_lit(ruby, "game_update"), 1, mrb_float_value(ruby, dt));
     if(ruby->exc){
         mrb_value m = mrb_funcall(ruby, mrb_obj_value(ruby->exc), "inspect", 0);
         pd->system->logToConsole("Cartridge Error: %s", mrb_str_to_cstr(ruby, m));
@@ -77,6 +79,7 @@ static int update(void* userdata)
     }
     //
     mrb_gc_arena_restore(ruby, snapshot);
+    pd->system->resetElapsedTime();
     //
     // Should redraw? - drive from return of game_update?
     return 1;

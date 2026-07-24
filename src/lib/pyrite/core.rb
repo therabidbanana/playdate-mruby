@@ -9,8 +9,13 @@ module Pyrite
     raise "No cartridge loaded" unless @current
   end
 
-  def self.game_update
+  def self.game_update(dt = 0)
+    @current.delta_time = dt
+    @current.before_update
     @current.update
+    @current.after_update
+    @current.before_draw
     @current.draw
+    @current.after_draw
   end
 end

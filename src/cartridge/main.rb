@@ -20,6 +20,8 @@ class HelloMruby < Pyrite::Cartridge
     @dy = 2
     @player = boot_player
     logger.info "Initialized game"
+    @debug = true
+    @timer = timers.once(3000)
   end
 
   def boot_player
@@ -38,17 +40,19 @@ class HelloMruby < Pyrite::Cartridge
     @player.move_to(@x, @y)
     @player.set_image(@bitmap)
     logger.info(memory_slots) if (@dt % 30).zero?
+    logger.info(delta_time.to_s) if (@dt % 30).zero?
+    if @timer&.dead?
+      logger.info("Timer expired #{@timer.inspect}")
+      @timer = nil
+    end
 
     @dx = -@dx unless @x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
     @dy = -@dy unless @y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)
   end
 
   def draw
-    Playdate::Sprite.drawSprites()
     msg = "Hello #{$name}"
     Playdate::Graphics.drawText(msg, msg.length, @x, @y)
-    Playdate::Graphics.drawText(memory_slots, memory_slots.length, 0, 10)
-    Playdate::System.drawFPS(0,0)
   end
 end
 
