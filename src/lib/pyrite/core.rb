@@ -1,7 +1,7 @@
 module Pyrite
   def self.load_cartridge(klass)
     @current = klass.new
-    Playdate::System.logToConsole(@current.inspect)
+    @current.prepare
     raise "Cartridge has no scenes" unless @current.scenes.default_scene
     # Load default scene
     @current.scenes.enter_scene!

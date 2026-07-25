@@ -2,7 +2,6 @@ class MainScene < Pyrite::Scene
   def prepare
     @x = (400 - $TEXT_WIDTH) / 2
     @y = (240 - $TEXT_HEIGHT) / 2
-    @dt = 0
     @dx = 1
     @dy = 2
     @player = boot_player
@@ -26,13 +25,22 @@ class MainScene < Pyrite::Scene
   end
 
   def update
-    @x += @dx
-    @y += @dy
-    @dt += 1
+    if inputs.pressed?(:left)
+      @x -= @dx
+    elsif inputs.pressed?(:right)
+      @x += @dx
+    end
+    if inputs.pressed?(:up)
+      @y -= @dy
+    elsif inputs.pressed?(:down)
+      @y += @dy
+    else
+      @y = @y
+    end
     @player.move_to(@x, @y)
     @player.set_image(@bitmap)
-    @dx = -@dx unless @x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
-    @dy = -@dy unless @y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)
+    # @dx = -@dx unless @x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
+    # @dy = -@dy unless @y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)
   end
 
   def draw

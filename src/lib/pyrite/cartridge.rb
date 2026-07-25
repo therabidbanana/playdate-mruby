@@ -11,8 +11,15 @@ module Pyrite
       @timers ||= Timers.new
     end
 
+    def inputs
+      @inputs ||= Inputs.new
+    end
+
     def scenes
       @scenes ||= SceneManager.new(self)
+    end
+
+    def prepare
     end
 
     #### Internal hooks

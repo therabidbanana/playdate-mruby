@@ -1,3 +1,5 @@
+#### TODO: Fix this to match latest cmake lists
+
 HEAP_SIZE      = 8388208
 STACK_SIZE     = 61800
 

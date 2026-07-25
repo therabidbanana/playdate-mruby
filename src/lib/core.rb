@@ -1,4 +1,3 @@
-
 module Kernel
   LOADED = {}
 
@@ -13,6 +12,10 @@ module Kernel
     __FILE__.delete_suffix('/lib/core.rb')
   end
 
+  def puts(arg)
+    Playdate::System.logToConsole arg.to_s
+  end
+
   def require(name, curr_name = $PD_FILENAME)
     name = "#{name}.mrb" unless name.end_with?(".mrb")
     fullname = if name.start_with?('/')
@@ -24,7 +27,7 @@ module Kernel
                 "cartridge/#{name}"
               end
     if LOADED[fullname]
-      Playdate::System.logToConsole("[require] #{fullname} was already required. Skipping")
+      puts("[require] #{fullname} was already required. Skipping")
     else
       LOADED[fullname] = true
       __pd_load(fullname)

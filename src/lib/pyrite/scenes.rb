@@ -8,6 +8,7 @@ module Pyrite
     def scenes = @cartridge.scenes
     def logger = @cartridge.logger
     def timers = @cartridge.timers
+    def inputs = @cartridge.inputs
 
     def prepare
     end
@@ -16,6 +17,9 @@ module Pyrite
     end
 
     def draw
+    end
+
+    def cleanup
     end
   end
 
@@ -40,6 +44,8 @@ module Pyrite
     end
 
     def leave_scene!
+      # TODO: transitions?
+      @active_scene.cleanup
     end
   end
 end
