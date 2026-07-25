@@ -67,18 +67,20 @@ add_custom_command(
 )
 
 # Ruby cartridge files - set up to be part of the pdx and loaded dynamic on game init
-file(GLOB CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartridge/*.rb)
+file(GLOB_RECURSE CARTRIDGE_RB CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cartridge/*.rb)
 set(CARTRIDGE_MRB "")
 foreach(rb ${CARTRIDGE_RB})
-  get_filename_component(name ${rb} NAME_WE)
-  set(out ${CMAKE_CURRENT_SOURCE_DIR}/Source/cartridge/${name}.mrb)
+  file(RELATIVE_PATH rel ${CMAKE_CURRENT_SOURCE_DIR}/src ${rb})
+  string(REGEX REPLACE "\\.rb$" ".mrb" relmrb ${rel})
+  set(out ${CMAKE_CURRENT_SOURCE_DIR}/Source/${relmrb})
+  get_filename_component(outdir ${out} DIRECTORY)
   add_custom_command(
     OUTPUT  ${out}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/Source/cartridge
-    COMMAND ${MRBC} -g -o ${out} cartridge/${name}.rb
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${outdir}
+    COMMAND ${MRBC} -g -o ${out} ${rel}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     DEPENDS ${rb} ${MRBC}
-    COMMENT "mrbc ${name}.rb -> Source/cartridge/${name}.mrb"
+    COMMENT "mrbc ${rel} -> Source/${relmrb}"
     VERBATIM
   )
   list(APPEND CARTRIDGE_MRB ${out})

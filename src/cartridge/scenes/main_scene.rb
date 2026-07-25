@@ -1,5 +1,6 @@
 class MainScene < Pyrite::Scene
   def prepare
+    # entities.add(:player, Player)
     @x = (400 - $TEXT_WIDTH) / 2
     @y = (240 - $TEXT_HEIGHT) / 2
     @dx = 1
@@ -16,6 +17,8 @@ class MainScene < Pyrite::Scene
   end
 
   def boot_player
+    # entities.create(:player)
+
     image_table = Playdate::Graphics.loadBitmapTable('images/pineapple-walk')
     @bitmap = image_table.get_bitmap(1)
     Playdate::Sprite.new.tap do |sprite|
