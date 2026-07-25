@@ -27,7 +27,7 @@ module Kernel
       Playdate::System.logToConsole("[require] #{fullname} was already required. Skipping")
     else
       LOADED[fullname] = true
-      Playdate.load(fullname)
+      __pd_load(fullname)
     end
   end
 end

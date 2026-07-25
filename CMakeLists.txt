@@ -51,6 +51,8 @@ set(RUBY_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/core.rb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/logger.rb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/cartridge.rb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/scenes.rb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/entities.rb
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/pyrite/timers.rb
 )
 

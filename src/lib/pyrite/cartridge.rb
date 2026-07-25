@@ -3,12 +3,6 @@ module Pyrite
     attr_accessor :delta_time
     attr_accessor :debug
 
-    def draw
-    end
-
-    def update
-    end
-
     def logger
       @logger ||= Logger.new
     end
@@ -17,10 +11,14 @@ module Pyrite
       @timers ||= Timers.new
     end
 
+    def scenes
+      @scenes ||= SceneManager.new(self)
+    end
+
     #### Internal hooks
 
     def before_update
-      @timers.tick((delta_time * 1000).floor)
+      timers.tick((delta_time * 1000).floor)
       # Update timers
     end
 

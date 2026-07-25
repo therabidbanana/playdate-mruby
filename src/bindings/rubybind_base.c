@@ -2,7 +2,7 @@
 
 extern PlaydateAPI* g_pd = NULL;
 
-mrb_value load_mrb_file(mrb_state* mrb, const char* path){
+mrb_value load_mrb_file(mrb_state* mrb, const char* path, mrb_value self){
     FileStat st;
 
     if(g_pd->file->stat(path, &st)){
@@ -26,14 +26,19 @@ mrb_value load_mrb_file(mrb_state* mrb, const char* path){
         return mrb_nil_value();
     }
 
+    int ai0 = mrb_gc_arena_save(mrb);
     mrb_value prev_value = mrb_gv_get(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"));
     mrb_gv_set(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"), mrb_str_new_cstr(mrb, path));
-    int ai = mrb_gc_arena_save(mrb);
+    mrb_gc_protect(mrb, prev_value);
+    int ai1 = mrb_gc_arena_save(mrb);
+
+    // TODO: Compilation context better?
     mrb_value r = mrb_load_irep_buf(mrb, buf, st.size);
     g_pd->system->realloc(buf, 0);
     ruby_report_any_exception(mrb);
-    mrb_gc_arena_restore(mrb, ai);
+    mrb_gc_arena_restore(mrb, ai1);
     mrb_gv_set(mrb, mrb_intern_lit(mrb, "$PD_FILENAME"), prev_value);
+    mrb_gc_arena_restore(mrb, ai0);
     return r;
 }
 
@@ -42,7 +47,7 @@ pd_load(mrb_state *mrb, mrb_value self)
 {
     const char* filename;
     mrb_get_args(mrb, "z", &filename);
-    load_mrb_file(mrb, filename);
+    load_mrb_file(mrb, filename, self);
 
     return mrb_nil_value();
 }
@@ -67,7 +72,7 @@ mrb_state* initRuby(PlaydateAPI* pd)
     rubybind_pd_graphics(ruby);
     rubybind_pd_sprite(ruby);
 
-    mrb_define_module_function(ruby, playdate, "load", pd_load, MRB_ARGS_REQ(1));
+    mrb_define_method(ruby, ruby->object_class, "__pd_load", pd_load, MRB_ARGS_REQ(1));
 
     return ruby;
 }

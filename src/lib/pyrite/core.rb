@@ -1,8 +1,10 @@
 module Pyrite
   def self.load_cartridge(klass)
     @current = klass.new
-    raise "Cartridge cannot draw" unless @current.respond_to?(:draw)
-    raise "Cartridge cannot update" unless @current.respond_to?(:update)
+    Playdate::System.logToConsole(@current.inspect)
+    raise "Cartridge has no scenes" unless @current.scenes.default_scene
+    # Load default scene
+    @current.scenes.enter_scene!
   end
 
   def self.current_cartridge
@@ -12,10 +14,10 @@ module Pyrite
   def self.game_update(dt = 0)
     @current.delta_time = dt
     @current.before_update
-    @current.update
+    @current.scenes.active_scene&.update
     @current.after_update
     @current.before_draw
-    @current.draw
+    @current.scenes.active_scene&.draw
     @current.after_draw
   end
 end
