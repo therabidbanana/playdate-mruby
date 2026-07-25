@@ -84,6 +84,18 @@ static mrb_value pd_graphics_getTableBitmap(mrb_state *mrb, mrb_value self){
     return mrb_obj_value(d);
 }
 
+
+static mrb_value pd_graphics_drawBitmap(mrb_state *mrb, mrb_value self){
+    mrb_int x,y;
+    mrb_value bitmap;
+    mrb_get_args(mrb, "oii", &bitmap, &x, &y);
+
+    LCDBitmap* b = pd_bitmap_get(mrb, bitmap);
+    // TODO: allow flippage
+    g_pd->graphics->drawBitmap(b, x, y, kBitmapUnflipped);
+    return self;
+}
+
 void rubybind_pd_graphics(mrb_state *mrb) {
     g_pd->system->logToConsole("Preparing Playdate->Graphics SDK functions...");
 
@@ -100,6 +112,8 @@ void rubybind_pd_graphics(mrb_state *mrb) {
     mrb_define_module_function(mrb, graphics, "clear", pd_graphics_clear, MRB_ARGS_OPT(1));
 
     mrb_define_module_function(mrb, graphics, "loadBitmapTable", pd_graphics_loadBitmapTable, MRB_ARGS_REQ(1));
+    mrb_define_module_function(mrb, graphics, "drawBitmap", pd_graphics_drawBitmap, MRB_ARGS_REQ(3));
+
     mrb_define_method(mrb, bitmap_table, "get_bitmap", pd_graphics_getTableBitmap, MRB_ARGS_REQ(1));
 
     mrb_define_const(mrb, graphics, "BLACK", mrb_fixnum_value(kColorBlack));

@@ -32,7 +32,6 @@ module Pyrite
     #### Internal hooks
 
     def before_update
-      timers.tick((delta_time * 1000).floor)
       # Update timers
       timers.tick((delta_time * 1000).floor)
       # Update enitites
