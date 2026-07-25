@@ -2,6 +2,10 @@
 #include "pd_api.h"
 
 extern PlaydateAPI *g_pd;
+extern mrb_state* ruby;
+extern mrb_sym g_sym_update;
+extern mrb_sym g_sym_draw;
+extern mrb_sym g_sym_prepare;
 extern const mrb_data_type pd_sprite_type;
 extern const mrb_data_type pd_bitmap_type;
 extern const mrb_data_type pd_bitmap_table_type;

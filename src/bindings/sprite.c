@@ -2,19 +2,26 @@
 
 static void sprite_free(mrb_state *mrb, void *p){
     if (p) {
+        g_pd->sprite->removeSprite((LCDSprite*)p);
         g_pd->sprite->freeSprite((LCDSprite*)p);
     };
 }
 // Boxed value for Playdate SDK LCDSprite
 const mrb_data_type pd_sprite_type = { "Playdate::Sprite", sprite_free };
 
-static mrb_value pd_sprite_new(mrb_state *mrb, mrb_value self){
+static mrb_value pd_sprite_initialize(mrb_state *mrb, mrb_value self){
     LCDSprite *s = g_pd->sprite->newSprite();
-    g_pd->sprite->addSprite(s);
-    struct RData *d = mrb_data_object_alloc(mrb, mrb_class_ptr(self), s, &pd_sprite_type);
+    mrb_data_init(self, s, &pd_sprite_type);
     // RData is void* and can be set in userdata, mrb_value isn't necessarily that type
-    g_pd->sprite->setUserdata(s, d);
-    return mrb_obj_value(d);
+    g_pd->sprite->setUserdata(s, mrb_ptr(self));
+    g_pd->sprite->addSprite(s);
+
+    // TODO:
+    // if (mrb_respond_to(mrb, self, g_sym_draw)) {
+    //     g_pd->sprite->setDrawFunction(s, sprite_draw_trampoline);
+    // }
+
+    return self;
 }
 
 
@@ -57,8 +64,8 @@ void rubybind_pd_sprite(mrb_state *mrb) {
     struct RClass *sprite = mrb_define_class_under(mrb, pd, "Sprite", mrb->object_class);
     // mrb defined way to hint this class is C backed
     MRB_SET_INSTANCE_TT(sprite, MRB_TT_DATA);
-    mrb_define_class_method(mrb, sprite, "new", pd_sprite_new, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, sprite, "drawSprites", pd_sprite_drawSprites, MRB_ARGS_NONE());
+    mrb_define_method(mrb, sprite, "initialize", pd_sprite_initialize, MRB_ARGS_NONE());
     mrb_define_method(mrb, sprite, "move_to", pd_sprite_moveTo, MRB_ARGS_REQ(2));
     mrb_define_method(mrb, sprite, "set_image", pd_sprite_setImage, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, sprite, "get_image", pd_sprite_getImage, MRB_ARGS_NONE());

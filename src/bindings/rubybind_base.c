@@ -1,6 +1,9 @@
 #include "rubybind_base.h"
 
 extern PlaydateAPI* g_pd = NULL;
+extern mrb_sym g_sym_update = NULL;
+extern mrb_sym g_sym_draw = NULL;
+extern mrb_sym g_sym_prepare = NULL;
 
 mrb_value load_mrb_file(mrb_state* mrb, const char* path, mrb_value self){
     FileStat st;
@@ -67,6 +70,10 @@ mrb_state* initRuby(PlaydateAPI* pd)
     /* Define Playdate */
     struct RClass *playdate = mrb_define_module(ruby, "Playdate");
     g_pd->system->logToConsole("Playdate class defined.");
+
+    g_sym_update = mrb_intern_lit(ruby, "update");
+    g_sym_draw = mrb_intern_lit(ruby, "draw");
+    g_sym_prepare = mrb_intern_lit(ruby, "prepare");
 
     rubybind_pd_system(ruby);
     rubybind_pd_graphics(ruby);

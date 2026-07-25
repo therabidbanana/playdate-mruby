@@ -15,8 +15,15 @@ module Pyrite
       @inputs ||= Inputs.new
     end
 
+    def entities
+      @entities ||= Entities.new(self)
+    end
+
     def scenes
       @scenes ||= SceneManager.new(self)
+    end
+    def active_scene
+      scenes.active_scene
     end
 
     def prepare
@@ -27,6 +34,9 @@ module Pyrite
     def before_update
       timers.tick((delta_time * 1000).floor)
       # Update timers
+      timers.tick((delta_time * 1000).floor)
+      # Update enitites
+      entities.update_all
     end
 
     def after_update
@@ -34,7 +44,7 @@ module Pyrite
     end
 
     def before_draw
-      Playdate::Sprite.drawSprites()
+      entities.draw_all()
     end
 
     def after_draw

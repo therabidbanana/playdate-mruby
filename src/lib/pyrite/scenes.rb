@@ -9,6 +9,7 @@ module Pyrite
     def logger = @cartridge.logger
     def timers = @cartridge.timers
     def inputs = @cartridge.inputs
+    def entities = @cartridge.entities
 
     def prepare
     end
