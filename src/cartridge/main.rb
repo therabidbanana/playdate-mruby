@@ -21,7 +21,13 @@ class HelloMruby < Pyrite::Cartridge
     @player = boot_player
     logger.info "Initialized game"
     @debug = true
-    @timer = timers.once(3000)
+    timers.once(3000) do
+      logger.info "Expired!"
+    end
+    timers.loop(1000, max_loops: 5) do
+      logger.info(memory_slots)
+      logger.info(delta_time.to_s)
+    end
   end
 
   def boot_player
@@ -39,13 +45,6 @@ class HelloMruby < Pyrite::Cartridge
     @dt += 1
     @player.move_to(@x, @y)
     @player.set_image(@bitmap)
-    logger.info(memory_slots) if (@dt % 30).zero?
-    logger.info(delta_time.to_s) if (@dt % 30).zero?
-    if @timer&.dead?
-      logger.info("Timer expired #{@timer.inspect}")
-      @timer = nil
-    end
-
     @dx = -@dx unless @x.between?(0, $LCD_COLUMNS - $TEXT_WIDTH)
     @dy = -@dy unless @y.between?(0, $LCD_ROWS - $TEXT_HEIGHT)
   end

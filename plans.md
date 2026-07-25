@@ -22,16 +22,7 @@
 ## Creating useful wrappers
 
 - [ ] Work out a full sprite class with animation state helpers (blink/walk) and inputs to move around
+  - Animation timers - loops?
   - Work out inputs
   - Image table support
   - Probably support for update vs draw on sprites
-
-## API Coverage
-
-* Bitmap
-  - Loading a bitmap
-* Graphics
-  - drawText
-  - clear (no color yet)
-* System
-  - logToConsole, FPS
