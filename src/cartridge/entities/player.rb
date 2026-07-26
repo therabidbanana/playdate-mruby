@@ -5,7 +5,9 @@ class Player < Pyrite::Entity
     @dy = 2
     @image_table = Playdate::Graphics.loadBitmapTable('images/pineapple-walk')
     @bitmap = @image_table.get_bitmap(1)
-    set_image(@bitmap)
+    set_size(32, 32)
+    # Note - set_image() + draw will _crash_
+    # set_image(@bitmap)
     @x = x
     @y = y
     move_to(x, y)
@@ -25,10 +27,12 @@ class Player < Pyrite::Entity
     else
       @y = @y
     end
+    mark_dirty!
     move_to(@x, @y)
   end
 
-  # def draw
-    # Playdate::Graphics.drawBitmap(@bitmap, @x, @y)
-  # end
+  # Less performant this way
+  def draw(x, y, w, h)
+    Playdate::Graphics.drawBitmap(@image_table.get_bitmap(rand(5)), x, y)
+  end
 end
