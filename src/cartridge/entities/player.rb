@@ -11,6 +11,7 @@ class Player < Pyrite::Entity
     @x = x
     @y = y
     move_to(x, y)
+    @timer = @cartridge.timers.animation(300, min: 0, max: 3, loops: -1)
   end
 
 
@@ -33,6 +34,6 @@ class Player < Pyrite::Entity
 
   # Less performant this way
   def draw(x, y, w, h)
-    Playdate::Graphics.drawBitmap(@image_table.get_bitmap(rand(5)), x, y)
+    Playdate::Graphics.drawBitmap(@image_table.get_bitmap(@timer.value), x, y)
   end
 end

@@ -17,16 +17,21 @@ module Pyrite
       timer_state
     end
 
+    def add_timer(timer)
+      @active << timer
+      timer
+    end
+
     def once(duration, delay: 0, &on_end)
-      SimpleTimer.new(duration:, &on_end).tap do |me|
-        @active << me
-      end
+      add_timer SimpleTimer.new(duration:, &on_end)
     end
 
     def loop(duration, max_loops: 0, &on_end)
-      LoopTimer.new(duration:, max_loops:, &on_end).tap do |me|
-        @active << me
-      end
+      add_timer LoopTimer.new(duration:, max_loops:, &on_end)
+    end
+
+    def animation(delay, min:, max:, loops: 0, &on_end)
+      add_timer AnimationTimer.new(duration: delay, min:, max:, max_loops: loops, &on_end)
     end
 
     class TimerState
@@ -49,10 +54,13 @@ module Pyrite
       def add_time(dt) = @elapsed += dt
       def check_expired
         if expired?
-          if @on_expired
-            @on_expired.call
-          end
+          maybe_call_expired
           expire_timer
+        end
+      end
+      def maybe_call_expired
+        if @on_expired
+          @on_expired.call
         end
       end
       def expire_timer
@@ -85,6 +93,43 @@ module Pyrite
       def expire_timer
         @loops += 1
         if @max_loops > 0 && @loops < @max_loops
+          @alive = true
+          @elapsed = @elapsed - @duration
+        else
+          @alive = false
+        end
+      end
+    end
+    class AnimationTimer < TimerState
+      attr_accessor :value
+      def initialize(min:, max:, max_loops: 0, **kwargs)
+        @type = :animation
+        @loops = 0
+        @value = min
+        @min = min
+        @max = max
+        @max_loops = max_loops
+        super
+      end
+      def maybe_call_expired
+        if @on_expired
+          @on_expired.call(@value)
+        end
+      end
+      def expire_timer
+        if (@value < @max)
+          @value += 1
+          @alive = true
+          @elapsed = @elapsed - @duration
+        elsif @max_loops.zero?
+          @alive = false
+        elsif @max_loops > 0 && @loops < @max_loops
+          @loops += 1
+          @value = @min
+          @alive = true
+          @elapsed = @elapsed - @duration
+        elsif @max_loops.negative?
+          @value = @min
           @alive = true
           @elapsed = @elapsed - @duration
         else

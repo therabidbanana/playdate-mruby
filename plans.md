@@ -11,6 +11,14 @@
   - [x] Load Bitmap Table
   - [x] Get specific Bitmap from Table
 - [ ] Tilemap support
+  - [ ] new/free
+  - [ ] setImageTable +get
+  - [ ] setSize (in tiles)
+  - [ ] getPixelSize (maybe unnecessary?)
+  - [ ] setTiles - each a uint tile identifier (into the imageTable:getBitmap)  
+        note this also sets size in tiles
+  - [ ] setTileAtPosition +get
+  - [ ] drawAtPoint (draws whole bitmap)
 - [ ] 
 - [ ] Sprites
   - [x] Set image 
@@ -18,23 +26,32 @@
   - [x] Creation
   - [x] Draw all sprites
   - [x] Custom draw function
-  - [~] ~Custom update function~ thinking maybe this lives Ruby side?
+  - [~] ~Custom update function~ thinking maybe this lives Ruby side better than C
   - [x] set size 
   - [ ] set bounds
   - [ ] Set collision rect
   - [ ] set center
   - [ ] Collisions
 - [ ] JSON support
-- [ ] Font support
-- [ ] 
+- [ ] Font support: font as a class first?
+- [ ] Strings support (lookup tables): playdate->system->getLocalizedText
 
 
 ## Creating useful wrappers
 
 - [ ] Work out a full sprite class with animation state helpers (blink/walk) and inputs to move around
   - Animation timers - loops?
-  - Work out inputs
-  - Image table support
-  - Probably support for update vs draw on sprites
 - [ ] LDTK support
 - [ ] Animation loop helpers
+  - Think about maybe making timers scene specific?
+- [ ] UI Helpers
+  - [ ] Menu
+    - [ ] Probably needs nine-slice support
+    - [ ] Maybe needs gridview helper?
+  - [ ] Dialog  
+    - [ ] Probably needs nine-slice
+
+
+## Possible fixes/changes
+
+- UI stuff should pause the main scene - should scenes be a _stack_ - allowing multiple scenes to draw? (Then a menu / dialog is a scene pushed on top of another scene)

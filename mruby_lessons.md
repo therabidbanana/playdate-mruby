@@ -85,3 +85,13 @@ static mrb_value pd_sprite_moveTo(mrb_state *mrb, mrb_value self){
 /// inside bind function where sprite class is declared
     mrb_define_method(mrb, sprite, "move_to", pd_sprite_moveTo, MRB_ARGS_REQ(2));
 ```
+
+
+Defining kernel-level C methods
+======================
+
+Default execution stack - where you define a C method might matter, for example,
+to create a load function that MRB can call to have C load another ruby file,
+you need that new file to execute with top level context - the function must be
+defined at the top level on the global object class rather than as part of a
+module to get the correct context.
