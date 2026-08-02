@@ -1,11 +1,11 @@
 #include "rubybind_base.h"
 
 extern PlaydateAPI* g_pd = NULL;
-extern mrb_sym g_sym_update = NULL;
-extern mrb_sym g_sym_draw = NULL;
-extern mrb_sym g_sym_prepare = NULL;
+extern mrb_sym g_sym_update = (mrb_sym) NULL;
+extern mrb_sym g_sym_draw = (mrb_sym) NULL;
+extern mrb_sym g_sym_prepare = (mrb_sym) NULL;
 
-mrb_value load_mrb_file(mrb_state* mrb, const char* path, mrb_value self){
+mrb_value load_mrb_file(mrb_state* mrb, const char* path){
     FileStat st;
 
     if(g_pd->file->stat(path, &st)){
@@ -50,7 +50,7 @@ pd_load(mrb_state *mrb, mrb_value self)
 {
     const char* filename;
     mrb_get_args(mrb, "z", &filename);
-    load_mrb_file(mrb, filename, self);
+    load_mrb_file(mrb, filename);
 
     return mrb_nil_value();
 }
