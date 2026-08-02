@@ -55,3 +55,8 @@
 ## Possible fixes/changes
 
 - UI stuff should pause the main scene - should scenes be a _stack_ - allowing multiple scenes to draw? (Then a menu / dialog is a scene pushed on top of another scene)
+
+
+## Build process improvements
+
+With cmake simulator vs device builds, artifacts of one or the other sometimes leak over. nmake clean is required to safely avoid. We probably need to ensure the pdex files built into `Source` are wiped on every build? Ideally we can build fresh device or simulator build from same repo at some point?

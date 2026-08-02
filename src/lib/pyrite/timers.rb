@@ -127,7 +127,7 @@ module Pyrite
       end
       def maybe_call_expired
         if @on_expired
-          @on_expired.call(@value, (@value + 1 >= @max))
+          @on_expired.call(@value, (@value >= @max))
         end
       end
       def expire_timer
