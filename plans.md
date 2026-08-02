@@ -60,3 +60,7 @@
 ## Build process improvements
 
 With cmake simulator vs device builds, artifacts of one or the other sometimes leak over. nmake clean is required to safely avoid. We probably need to ensure the pdex files built into `Source` are wiped on every build? Ideally we can build fresh device or simulator build from same repo at some point?
+
+## Random ideas
+
+stdlib via Spinel (compile to .c and then build in?) for performance without having to write the c?

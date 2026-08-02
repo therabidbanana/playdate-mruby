@@ -8,3 +8,4 @@ Source/**/*.mrb
 Source/pdex.dll
 Source/pdex.elf
 Source/cartridge/
+.cache/

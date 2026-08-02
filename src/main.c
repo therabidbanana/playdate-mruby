@@ -26,6 +26,7 @@ const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
 LCDFont* font = NULL;
 mrb_state* ruby;
 struct RClass* pyrite;
+int timestamp = 0;
 
 #ifdef _WINDLL
 __declspec(dllexport)
@@ -36,6 +37,8 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 
 	if ( event == kEventInit )
 	{
+    	pd->display->setRefreshRate(30.0f);
+        timestamp = pd->system->getCurrentTimeMilliseconds();
     	pd->system->logToConsole("Loaded up.");
 	    ruby = initRuby(pd);
 
@@ -65,13 +68,16 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 static int update(void* userdata)
 {
     PlaydateAPI* pd = userdata;
-    float dt = pd->system->getElapsedTime();
+    // Possible bug - the elapsedtime value on ARM was ~1/20th the expected value per frame (too small to count millis)
+    // float dt = pd->system->getElapsedTime();
+    int dt = pd->system->getCurrentTimeMilliseconds() - timestamp;
+    timestamp = pd->system->getCurrentTimeMilliseconds();
 
     /* Call with symbol (faster, no string lookup) */
     int snapshot = mrb_gc_arena_save(ruby);
 
     // TODO: let this control with return value
-    mrb_funcall_id(ruby, mrb_obj_value(pyrite), mrb_intern_lit(ruby, "game_update"), 1, mrb_float_value(ruby, dt));
+    mrb_funcall_id(ruby, mrb_obj_value(pyrite), mrb_intern_lit(ruby, "game_update"), 1, mrb_fixnum_value(dt));
     if(ruby->exc){
         mrb_value m = mrb_funcall(ruby, mrb_obj_value(ruby->exc), "inspect", 0);
         pd->system->logToConsole("Cartridge Error: %s", mrb_str_to_cstr(ruby, m));
@@ -79,6 +85,7 @@ static int update(void* userdata)
     }
     //
     mrb_gc_arena_restore(ruby, snapshot);
+    // pd->system->delay(50.0f);
     pd->system->resetElapsedTime();
     //
     // Should redraw? - drive from return of game_update?

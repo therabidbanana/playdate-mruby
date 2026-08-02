@@ -33,7 +33,7 @@ module Pyrite
 
     def before_update
       # Update timers
-      timers.tick((delta_time * 1000).floor)
+      timers.tick(delta_time)
       # Update enitites
       entities.update_all
     end

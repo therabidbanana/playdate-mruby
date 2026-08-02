@@ -49,7 +49,8 @@ module Pyrite
       @state = new_state
       cartridge.timers.reset(@animation_states[new_state])
       @animation_states[new_state].unpause!
-      cartridge.logger.info "new state #{@state} - #{@animation_states[@state].inspect}"
+      # cartridge.logger.info "new state #{@state} - #{@animation_states[@state].inspect}"
+      #
       set_image(@image_table.get_bitmap(@animation_states[new_state].value))
       mark_dirty!
     end

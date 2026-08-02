@@ -112,10 +112,14 @@ if (TOOLCHAIN STREQUAL "armgcc")
 endif()
 add_compile_definitions(
   MRB_NO_STDIO
+  MRB_USE_FLOAT32
+  MRB_INT32
 )
 add_library(mruby STATIC ${CMAKE_SOURCE_DIR}/vendor/mruby/mruby.c)
 target_compile_definitions(mruby PRIVATE
   MRB_NO_STDIO
+  MRB_USE_FLOAT32
+  MRB_INT32
 )
 target_include_directories(mruby PUBLIC ${CMAKE_SOURCE_DIR}/vendor/mruby)
 
