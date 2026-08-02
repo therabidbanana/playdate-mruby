@@ -10,6 +10,7 @@
   - [x] Load bitmap
   - [x] Load Bitmap Table
   - [x] Get specific Bitmap from Table
+  - [ ] Size of image table
 - [ ] Tilemap support
   - [ ] new/free
   - [ ] setImageTable +get
@@ -19,7 +20,6 @@
         note this also sets size in tiles
   - [ ] setTileAtPosition +get
   - [ ] drawAtPoint (draws whole bitmap)
-- [ ] 
 - [ ] Sprites
   - [x] Set image 
   - [x] moveTo

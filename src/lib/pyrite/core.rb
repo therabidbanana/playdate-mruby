@@ -19,5 +19,10 @@ module Pyrite
     @current.before_draw
     @current.scenes.active_scene&.draw
     @current.after_draw
+  rescue => e
+    @current.logger.warn "Exception captured: #{e.inspect}"
+    e.backtrace.map do |line|
+      @current.logger.warn "\t#{line}"
+    end
   end
 end

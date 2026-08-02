@@ -18,8 +18,14 @@ module Pyrite
     end
 
     def add_timer(timer)
-      @active << timer
+      # TODO: probably not a good place for a scan
+      @active << timer unless @active.include?(timer)
       timer
+    end
+
+    def reset(timer)
+      timer.reset!
+      add_timer(timer)
     end
 
     def once(duration, delay: 0, &on_end)
@@ -76,6 +82,10 @@ module Pyrite
       def off?     = !@alive
       def dead?    = !@alive
       def paused?  = @paused
+      def reset!
+        @alive = true
+        @elapsed = 0
+      end
     end
     class SimpleTimer < TimerState
       def initialize(**kwargs)
@@ -99,6 +109,10 @@ module Pyrite
           @alive = false
         end
       end
+      def reset!
+        @loops = 0
+        super
+      end
     end
     class AnimationTimer < TimerState
       attr_accessor :value
@@ -113,7 +127,7 @@ module Pyrite
       end
       def maybe_call_expired
         if @on_expired
-          @on_expired.call(@value)
+          @on_expired.call(@value, (@value + 1 >= @max))
         end
       end
       def expire_timer
@@ -135,6 +149,11 @@ module Pyrite
         else
           @alive = false
         end
+      end
+      def reset!
+        @loops = 0
+        @value = @min
+        super
       end
     end
   end
